@@ -19,7 +19,7 @@ inquirer
       type: 'list',
       name: 'logo_shape',
       message: 'Please pick a shape for the logo',
-      choices: ['triangle', 'square', 'circle'],
+      choices: ['Triangle', 'Square', 'Circle'],
     },
     {
       type: 'input',
@@ -28,26 +28,36 @@ inquirer
     }
   ])
   .then((details) => {
-    // let shape;
-    // shape = new Triangle ()
-    // shape.setColor(data.shape_color)
-    // console.log(shape)
-    // fs.writeFile(filename, JSON.stringify(data, null, '\t'), (err) =>
-    //   err ? console.log(err) : console.log('Success!')
-    // );
     if (details.logo_text.length > 3) {
       console.log("The text of the logo must be no longer than 3 characters");
       specifyPrompt();
     } else {
-      // Calling write file function to generate SVG file
-      // writeToFile("logo.svg", answers); !!!
-      console.log(details)
+      svgCreator("logo.svg", details);
     }
   });
 }
 
-specifyPrompt ()
+function svgCreator(fileName, details) {
+  let svgContent = '<svg version="1.1" width="300" height="200" xmlns="http://www.w3.org/2000/svg">';
+  svgContent += `${details.logo_shape}`;
 
-// Class SVG that brings it all together
-// Method to get text in the text setColor
-// In the SVG class you are going to call a render method 
+  let selected_shape;
+  if (details.logo_shape === "Triangle") {
+    selected_shape = new Triangle();
+    svgContent += `<polygon points="150, 18 244, 182 56, 182" fill="${details.shape_color}"/>`;
+  } else if (details.logo_shape === "Square") {
+    selected_shape = new Square();
+    svgContent += `<rect x="73" y="40" width="160" height="160" fill="${details.shape_color}"/>`;
+  } else {
+    selected_shape = new Circle();
+    svgContent += `<circle cx="150" cy="115" r="80" fill="${details.shape_color}"/>`;
+  }
+
+  svgContent += `<text x="150" y="130" text-anchor="middle" font-size="40" fill="${details.text_color}">${details.logo_text}</text></svg>`;
+
+  fs.writeFile(fileName, svgContent, (error) => {
+    error ? console.log(error) : console.log("Logo svg file created succesfully!!");
+  });
+}
+
+specifyPrompt ()
